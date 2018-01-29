@@ -1,0 +1,117 @@
+apply plugin: 'com.android.application'
+
+
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "26.0.2"
+    defaultConfig {
+        applicationId "wgyscsf.financialcustomerview"
+        minSdkVersion 17
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.4"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+
+    }
+
+    signingConfigs {
+        //debug模式下签名的设置，这里的配置主要用于脚本运行。对于采用图形界面构建测不起效。
+        debug {
+            storeFile file(project.debug_storeFile)
+            storePassword project.debug_storePassword
+            keyAlias project.debug_keyAlias
+            keyPassword project.debug_keyPassword
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+
+        beta {
+            storeFile file(project.debug_storeFile)
+            storePassword project.debug_storePassword
+            keyAlias project.debug_keyAlias
+            keyPassword project.debug_keyPassword
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+
+        release {
+            storeFile file(project.release_storeFile)
+            storePassword project.release_storePassword
+            keyAlias project.release_keyAlias
+            keyPassword project.release_keyPassword
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
+    buildTypes {
+        //平时开发使用
+        debug {
+            // 显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            shrinkResources false
+            minifyEnabled false
+            zipAlignEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //versionName的后缀
+            versionNameSuffix "_debug"
+            //appId后缀，加一个后缀保证各个版本（debug、beta、release可以共存）
+            applicationIdSuffix ".debug"
+            //签名选择
+            signingConfig signingConfigs.debug
+            //动态修改应用的名字和图标
+            manifestPlaceholders = [app_names: "金融View_debug"]
+        }
+
+        //内侧使用
+        beta {
+            // 显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            shrinkResources false
+            minifyEnabled false
+            zipAlignEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //versionName的后缀
+            versionNameSuffix "_beta"
+            //appId后缀
+            applicationIdSuffix ".beta"
+            //签名选择
+            signingConfig signingConfigs.beta
+            manifestPlaceholders = [app_names: "金融View_beta"]
+        }
+
+        //正式版本
+        release {
+            //不显示log信息
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            // 移除无用的resource文件
+            shrinkResources true
+            //混淆
+            minifyEnabled true
+            //压缩
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //签名
+            signingConfig signingConfigs.release
+
+            manifestPlaceholders = [app_names: "金融View"]
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    testCompile 'junit:junit:4.12'
+
+    compile "com.google.code.gson:gson:2.8.2"
+
+    //引入rx
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex:rxjava:1.2.4'
+}
